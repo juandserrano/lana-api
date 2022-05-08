@@ -1,4 +1,4 @@
-package controller
+package router
 
 import (
 	"encoding/json"
@@ -6,42 +6,28 @@ import (
 	"net/http"
 	"time"
 
+	
 	"github.com/juandserrano/lana-api/model"
 )
 
-func Transactions(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case "GET":
-		showTransactions(w)
-		break
-	case "POST":
-		handlePost()
-		break
-	case "UPDATE":
-		updateTransaction()
-		break
-	default:
-		fmt.Println("Error code")
-	}
-}
-
-func newTransaction(){
+func NewTransaction(){
+	
 	fmt.Println("New transaction")
 }
 
-func handlePost() {
+func HandlePost() {
 	fmt.Println("Handle post")
 }
 
-func deleteTransaction(){
+func DeleteTransaction(){
 	fmt.Println("delete transaction")
 }
 
-func updateTransaction(){
+func UpdateTransaction(){
 	fmt.Println("update transaction")
 }
 
-func showTransactions(w http.ResponseWriter){
+func ShowTransactions(w http.ResponseWriter, r *http.Request){
 	transactions := model.Transactions{
 		model.Transaction{
 			Name: "UberEats",
