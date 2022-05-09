@@ -5,18 +5,19 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-	"github.com/go-chi/cors"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 
 	"github.com/juandserrano/lana-api/router"
 )
 
 func main() {
-	handleRequests()
+	r := chi.NewRouter()
+	handleRequests(r)
 }
 
-func handleRequests() {
-	r := chi.NewRouter()
+func handleRequests(r *chi.Mux) {
+	
 	r.Use(middleware.Logger)
 	r.Use(cors.Handler(cors.Options{
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
@@ -32,6 +33,8 @@ func handleRequests() {
 		r.Get("/", router.ShowTransactions)
 	})
 
-	log.Fatal(http.ListenAndServe(":3003",r))
+	port := "3003"
+	log.Println("Listening on port", port)
+	log.Fatal(http.ListenAndServe(":" + port, r))
 }
 
