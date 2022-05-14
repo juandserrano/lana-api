@@ -8,11 +8,14 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 
+	"github.com/juandserrano/lana-api/controller"
 	"github.com/juandserrano/lana-api/router"
 )
 
 func main() {
+  controller.ConnectToDB()
 	r := chi.NewRouter()
+
 	handleRequests(r)
 }
 
