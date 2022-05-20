@@ -34,6 +34,7 @@ func handleRequests(r *chi.Mux) {
 	}))
 	r.Route("/api/transactions", func(r chi.Router) {
 		r.Get("/", router.ShowTransactions)
+    r.Post("/new", router.NewTransaction)
 	})
 
 	port := "3003"

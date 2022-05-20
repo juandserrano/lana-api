@@ -10,6 +10,9 @@ import (
 	"github.com/juandserrano/lana-api/model"
 	_ "github.com/lib/pq"
 )
+
+var db *sql.DB
+
 func ConnectToDB(){
   host := "postgres"
   port := "5432"
@@ -26,7 +29,7 @@ func ConnectToDB(){
   defer db.Close()
 
   checkDBExists(db, dbname)
-  _, err = db.Exec("CREATE TABLE IF NOT EXISTS transactions (name varchar(255), category varchar(255), vendor varchar(255))")
+  _, err = db.Exec("CREATE TABLE IF NOT EXISTS transactions (id serial PRIMARY KEY, name varchar(255) NOT NULL, amount DECIMAL NOT NULL, category varchar(255), vendor varchar(255), date DATE NOT NULL DEFAULT CURRENT_DATE)")
   if err != nil {
     log.Fatalf("Error creating table: %s", err)
   }
@@ -49,4 +52,14 @@ func checkDBExists(db *sql.DB, dbname string){
   if err != nil {
     log.Fatal("Error creating DB")
   }
+}
+
+func NewTransaction(t model.Transaction) error {
+  _, err := db.Exec("INSERT INTO transactions (name, amount, category, vendor, date) VALUES (%s, %s, %s, %s, %s)",
+    t.Name, t.Amount, t.Category, t.Vendor, t.Date)
+    if err != nil {
+      log.Fatalf("Error insertion into database: %s", err)
+      return err
+    }
+  return nil
 }
