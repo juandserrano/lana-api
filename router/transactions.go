@@ -21,8 +21,6 @@ func NewTransaction(w http.ResponseWriter, r *http.Request){
   }
   log.Printf("Receiving Body: %s", body)
 
-  
-
   err = json.Unmarshal(body, transaction)
   if err != nil {
     log.Fatalf("Error unmarshalling transaction: %s", err)
