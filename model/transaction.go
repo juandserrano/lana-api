@@ -1,13 +1,12 @@
 package model
 
 import (
-	"time"
 )
 
 type Transaction struct {
-	Date		time.Time	`json:"date"`
+	Date		string	`json:"date"`
 	Name		string		`json:"name"`
-	Amount		float64		`json:"amount"`
+	Amount		float64		`json:"amount,string"`
 	Category	string		`json:"category"`
 	Vendor		string		`json:"vendor"`
 }

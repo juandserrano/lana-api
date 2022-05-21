@@ -6,29 +6,33 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/juandserrano/lana-api/controller"
 	"github.com/juandserrano/lana-api/model"
 )
 
 func NewTransaction(w http.ResponseWriter, r *http.Request){
-  var transaction model.Transaction
+  var transaction *model.Transaction
   body, err := ioutil.ReadAll(r.Body)
   defer r.Body.Close()
   if err != nil {
     log.Fatalf("Error in ReadAll: %s", err)
+    return
   }
-  err = json.Unmarshal([]byte(body), &transaction)
+  log.Printf("Receiving Body: %s", body)
+
+  
+
+  err = json.Unmarshal(body, transaction)
   if err != nil {
-    fmt.Fprintf(w, "Error unmarshalling transaction!: %s", err)
     log.Fatalf("Error unmarshalling transaction: %s", err)
+    return
   }
   log.Printf("Unmarshalled Body: %s, %s, %s", transaction.Name, transaction.Date, transaction.Vendor)
-  err = controller.NewTransaction(transaction)
+  err = controller.NewTransaction(*transaction)
   if err != nil {
-    log.Fatalf("%s", err)
-    fmt.Fprintf(w, "Error processing transaction!: %s", err)
+    log.Fatalf("Error on database: %s", err)
+    return
   }
 
   fmt.Fprintf(w, "Added!")
@@ -52,7 +56,7 @@ func ShowTransactions(w http.ResponseWriter, r *http.Request){
 		model.Transaction{
 			Name: "UberEats",
 			Amount: 69.9,
-			Date: time.Now(),
+			Date: "10/10.2010",
 			Vendor: "Shawarma",
 			Category: "Restaurants",
 		},
