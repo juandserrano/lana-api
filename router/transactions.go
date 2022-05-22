@@ -12,22 +12,23 @@ import (
 )
 
 func NewTransaction(w http.ResponseWriter, r *http.Request){
-  var transaction *model.Transaction
+  var transaction model.Transaction
   body, err := ioutil.ReadAll(r.Body)
-  defer r.Body.Close()
   if err != nil {
     log.Fatalf("Error in ReadAll: %s", err)
     return
   }
+  defer r.Body.Close()
   log.Printf("Receiving Body: %s", body)
 
-  err = json.Unmarshal(body, transaction)
+  err = json.Unmarshal(body, &transaction)
   if err != nil {
     log.Fatalf("Error unmarshalling transaction: %s", err)
     return
   }
-  log.Printf("Unmarshalled Body: %s, %s, %s", transaction.Name, transaction.Date, transaction.Vendor)
-  err = controller.NewTransaction(*transaction)
+  log.Printf("Unmarshalled Body: %T, , %T, %T, %T", transaction.Name, transaction.Amount, transaction.Date, transaction.Vendor)
+
+  err = controller.NewTransaction(controller.GetDB(), transaction)
   if err != nil {
     log.Fatalf("Error on database: %s", err)
     return
