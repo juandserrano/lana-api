@@ -26,16 +26,15 @@ func NewTransaction(w http.ResponseWriter, r *http.Request){
     log.Fatalf("Error unmarshalling transaction: %s", err)
     return
   }
-  log.Printf("Unmarshalled Body: %T, , %T, %T, %T", transaction.Name, transaction.Amount, transaction.Date, transaction.Vendor)
 
-  err = controller.NewTransaction(controller.GetDB(), transaction)
+  db, _ := controller.GetDB()
+  err = controller.NewTransaction(db, transaction)
   if err != nil {
     log.Fatalf("Error on database: %s", err)
     return
   }
 
   fmt.Fprintf(w, "Added!")
-
 }
 
 func HandlePost() {
@@ -51,20 +50,17 @@ func UpdateTransaction(){
 }
 
 func ShowTransactions(w http.ResponseWriter, r *http.Request){
-	transactions := model.Transactions{
-		model.Transaction{
-			Name: "UberEats",
-			Amount: 69.9,
-			Date: "10/10.2010",
-			Vendor: "Shawarma",
-			Category: "Restaurants",
-		},
-	}
+
+  db, _ := controller.GetDB()
+  tList, err := controller.GetAllTransactions(db)
+  if err != nil {
+    log.Fatalf("Error on database: %s", err)
+    return
+  }
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(transactions); err != nil {
+	if err := json.NewEncoder(w).Encode(tList); err != nil {
 		panic(err)
 	}
-	fmt.Println("Show transaction console")
 }

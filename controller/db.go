@@ -45,3 +45,35 @@ func NewTransaction(db *sql.DB, t model.Transaction) error {
   }
   return nil
 }
+
+func GetAllTransactions(db *sql.DB) (model.Transactions, error) {
+
+  err := db.Ping()
+  if err != nil {
+    return nil, err
+  }
+
+
+  query := `SELECT "name", "category", "vendor", "date", "amount" FROM transactions`
+  rows, err := db.Query(query)
+  tList := model.Transactions{}
+
+  defer rows.Close()
+  for rows.Next() {
+    var name, category, vendor, date string
+    var amount float64
+    err = rows.Scan(&name, &category, &vendor, &date, &amount)
+    if err != nil {
+      return nil, err
+    }
+    tList = append(tList, model.Transaction{
+      Name: name,
+      Category: category,
+      Amount: amount,
+      Vendor: vendor,
+      Date: date,
+    })
+  }
+
+  return tList, nil;
+}
