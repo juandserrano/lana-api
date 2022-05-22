@@ -37,8 +37,8 @@ func GetDB() (*sql.DB, error){
 }
 
 func NewTransaction(db *sql.DB, t model.Transaction) error {
-  sqlStatement := `INSERT INTO "transactions" ("name", "amount", "category", "vendor", "date") VALUES ($1, $2, $3, $4, $5)`
-  _, err := db.Exec(sqlStatement, t.Name, t.Amount, "category", t.Vendor, t.Date)
+  sqlStatement := `INSERT INTO "transactions" ("name", "amount", "category", "vendor", "date", "uuid") VALUES ($1, $2, $3, $4, $5, $6)`
+  _, err := db.Exec(sqlStatement, t.Name, t.Amount, t.Category, t.Vendor, t.Date, t.UUID)
 
   if err != nil {
     return err
@@ -54,15 +54,15 @@ func GetAllTransactions(db *sql.DB) (model.Transactions, error) {
   }
 
 
-  query := `SELECT "name", "category", "vendor", "date", "amount" FROM transactions`
+  query := `SELECT "name", "category", "vendor", "date", "amount", "uuid" FROM transactions`
   rows, err := db.Query(query)
   tList := model.Transactions{}
 
   defer rows.Close()
   for rows.Next() {
-    var name, category, vendor, date string
+    var name, category, vendor, date, UUID string
     var amount float64
-    err = rows.Scan(&name, &category, &vendor, &date, &amount)
+    err = rows.Scan(&name, &category, &vendor, &date, &amount, &UUID)
     if err != nil {
       return nil, err
     }
@@ -72,6 +72,7 @@ func GetAllTransactions(db *sql.DB) (model.Transactions, error) {
       Amount: amount,
       Vendor: vendor,
       Date: date,
+      UUID: UUID,
     })
   }
 

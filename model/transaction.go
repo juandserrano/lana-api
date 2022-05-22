@@ -9,6 +9,7 @@ type Transaction struct {
   Amount		float64 `json:"amount,string"`
 	Category	string
 	Vendor		string
+  UUID      string
 }
 
 type Transactions []Transaction
