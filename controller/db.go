@@ -10,43 +10,35 @@ import (
 	"github.com/juandserrano/lana-api/model"
 	_ "github.com/lib/pq"
 )
-func ConnectToDB(){
+var db *sql.DB
+func ConnectToDB() (error){
   host := "postgres"
   port := "5432"
   user := "postgres"
   password := os.Getenv("POSTGRES_PASSWORD")
   dbname := "lana"
 
-  connInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s sslmode=disable", host, port, user, password)
+  connInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
-  db, err := sql.Open("postgres", connInfo)
+  var err error
+  db, err = sql.Open("postgres", connInfo)
   if err != nil {
-    log.Fatalf("Error connecting to Postgres: %s", err)
+    return err
   }
-  defer db.Close()
 
-  checkDBExists(db, dbname)
-  _, err = db.Exec("CREATE TABLE IF NOT EXISTS transactions (name varchar(255), category varchar(255), vendor varchar(255))")
-  if err != nil {
-    log.Fatalf("Error creating table: %s", err)
-  }
-  query := "select name FROM transactions"
-  data, err := db.Query(query)
-  if err != nil {
-    log.Fatalf("Error querying to Database: %s", err)
-  }
-  var transaction model.Transaction
-  s, _ := data.Columns()
-  fmt.Printf("Columns: %s", s) 
-  for data.Next() {
-    data.Scan(&transaction.Name)
-    fmt.Printf("Name is: %s", transaction.Name)
-  }
+  return nil
 }
 
-func checkDBExists(db *sql.DB, dbname string){
-  _, err := db.Exec("SELECT 'CREATE DATABASE" + dbname + "' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '" + dbname + "')")
+func GetDB() *sql.DB{
+  return db
+}
+
+func NewTransaction(db *sql.DB, t model.Transaction) error {
+  sqlStatement := `INSERT INTO "transactions" ("name", "amount", "category", "vendor", "date") VALUES ($1, $2, $3, $4, $5)`
+  _, err := db.Exec(sqlStatement, t.Name, t.Amount, "category", t.Vendor, t.Date)
+
   if err != nil {
-    log.Fatal("Error creating DB")
+    return err
   }
+  return nil
 }

@@ -3,16 +3,39 @@ package router
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
-	"time"
 
-	
+	"github.com/juandserrano/lana-api/controller"
 	"github.com/juandserrano/lana-api/model"
 )
 
-func NewTransaction(){
-	
-	fmt.Println("New transaction")
+func NewTransaction(w http.ResponseWriter, r *http.Request){
+  var transaction model.Transaction
+  body, err := ioutil.ReadAll(r.Body)
+  if err != nil {
+    log.Fatalf("Error in ReadAll: %s", err)
+    return
+  }
+  defer r.Body.Close()
+  log.Printf("Receiving Body: %s", body)
+
+  err = json.Unmarshal(body, &transaction)
+  if err != nil {
+    log.Fatalf("Error unmarshalling transaction: %s", err)
+    return
+  }
+  log.Printf("Unmarshalled Body: %T, , %T, %T, %T", transaction.Name, transaction.Amount, transaction.Date, transaction.Vendor)
+
+  err = controller.NewTransaction(controller.GetDB(), transaction)
+  if err != nil {
+    log.Fatalf("Error on database: %s", err)
+    return
+  }
+
+  fmt.Fprintf(w, "Added!")
+
 }
 
 func HandlePost() {
@@ -32,7 +55,7 @@ func ShowTransactions(w http.ResponseWriter, r *http.Request){
 		model.Transaction{
 			Name: "UberEats",
 			Amount: 69.9,
-			Date: time.Now(),
+			Date: "10/10.2010",
 			Vendor: "Shawarma",
 			Category: "Restaurants",
 		},
