@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"database/sql"
@@ -29,8 +28,12 @@ func ConnectToDB() (error){
   return nil
 }
 
-func GetDB() *sql.DB{
-  return db
+func GetDB() (*sql.DB, error){
+  err := db.Ping()
+  if err != nil {
+    return nil, err
+  }
+  return db, nil
 }
 
 func NewTransaction(db *sql.DB, t model.Transaction) error {
