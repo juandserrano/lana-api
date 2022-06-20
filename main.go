@@ -40,6 +40,10 @@ func handleRequests(r *chi.Mux) {
     r.Post("/new", router.NewTransaction)
 	})
 
+	r.Route("/api/accounts", func(r chi.Router) {
+		r.Get("/summary", router.GetAccountSummary)
+	})
+
 	port := "3003"
 	log.Println("Listening on port", port)
 	log.Fatal(http.ListenAndServe(":" + port, r))
