@@ -4,12 +4,12 @@ import (
 )
 
 type Transaction struct {
-  Date		string `json:"date"`
+  Type		string `json:"type"`
   Name		string `json:"name"`
   Amount		float64 `json:"amount,string"`
-  Category	string `json:"category"`
-  Vendor		string `json:"vendor"`
-  UUID      string `json:"uuid"`
+  Id      int `json:"id,string"`
+  AccountId int `json:"accountid,string"`
+  Month string `json:"month"`
 }
 
 type Transactions []Transaction
